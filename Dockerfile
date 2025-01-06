@@ -13,7 +13,7 @@ VOLUME ["/var/lib/odoo", "/etc/odoo", "/mnt/extra-addons"]
 
 # Copy local config and addons to container volumes
 COPY config /etc/odoo
-COPY myaddons /mnt/extra-addons
+COPY addons /mnt/extra-addons
 
 # Expose port 8069
 EXPOSE 8069
