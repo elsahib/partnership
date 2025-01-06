@@ -1,7 +1,12 @@
 FROM odoo:18.0
 
+USER root
+
 # Install JWT library
-RUN pip install --user pyjwt
+
+RUN apt-get update && apt-get install -y  python3-jwt 
+
+RUN pip install pyjwt
 
 # Create volumes for data, config, and addons
 VOLUME ["/var/lib/odoo", "/etc/odoo", "/mnt/extra-addons"]
@@ -13,9 +18,11 @@ COPY myaddons /mnt/extra-addons
 # Expose port 8069
 EXPOSE 8069
 
-# Link to a database container (replace "db" with your actual database container name)
-# Note: Linking is deprecated in newer Docker versions. Consider using Docker Compose for better network management.
-# LINK db:db 
+
+USER odoo
 
 # Run Odoo
 CMD ["-c", "/etc/odoo/odoo.conf"]
+
+
+
