@@ -13,7 +13,7 @@ services:
     volumes:
       - odoo-data:/var/lib/odoo
       - ./config:/etc/odoo
-      - ./myaddons:/mnt/extra-addons
+      - ./addons:/mnt/extra-addons
     command: [ "sh", "-c", "apt-get update && apt-get install -y python3-jwt && odoo" ]
     user: root # Run as root user to allow sudo
 
