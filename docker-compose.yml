@@ -1,38 +1,33 @@
 version: '3.1'
 services:
-  odoo:
-    build: 
-      context: .
-      dockerfile: Dockerfile
+  web:
+    image: odoo:18.0
     depends_on:
       - db
     ports:
       - "8069:8069"
+    environment:
+      - HOST=db
+      - USER=${POSTGRES_USER}
+      - PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - odoo-data:/var/lib/odoo
       - ./config:/etc/odoo
-      - ./addons:/mnt/extra-addons
-    environment:
-      - PASSWORD_FILE=/run/secrets/postgresql_password
-    secrets:
-      - postgresql_password
+      - ./myaddons:/mnt/extra-addons
+    command: [ "sh", "-c", "apt-get update && apt-get install -y python3-jwt && odoo" ]
+    user: root # Run as root user to allow sudo
+
   db:
     image: postgres:15
     ports:
-    - "5432:5432"  
+      - "5432:5432"
     environment:
       - POSTGRES_DB=postgres
-      - POSTGRES_PASSWORD_FILE=/run/secrets/postgresql_password
-      - POSTGRES_USER=odoo
-      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
     volumes:
       - odoo-db:/var/lib/postgresql/data
-    secrets:
-      - postgresql_password
+
 volumes:
   odoo-data:
   odoo-db:
-
-secrets:
-  postgresql_password:
-    file: odoo_pg_pass
