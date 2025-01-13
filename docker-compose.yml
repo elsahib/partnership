@@ -14,7 +14,7 @@ services:
       - odoo-data:/var/lib/odoo
       - ./config:/etc/odoo
       - ./addons:/mnt/extra-addons
-    command: [ "sh", "-c", "apt-get update && apt-get install -y python3-jwt gosu && gosu odoo odoo" ]
+    command: [ "sh", "-c", "apt-get update && apt-get install -y python3-pypeg2 python3-jwt gosu && gosu odoo odoo" ]
     user: root # Run as root user to allow sudo
 
   db:
