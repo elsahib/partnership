@@ -52,7 +52,8 @@ class OdooAPI(http.Controller):
         except KeyError:
             raise exceptions.AccessDenied(message='`db` is required.')
 
-        http.request.session.authenticate(db, login, password)
+        credential = {'login': login, 'password': password, 'type': 'password'}
+        auth_info = request.session.authenticate(db, credential)
         res = request.env['ir.http'].session_info()
         return res
 
