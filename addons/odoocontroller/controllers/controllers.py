@@ -6,6 +6,140 @@ import datetime
 import hashlib
 from odoo.exceptions import AccessDenied
 import json
+import logging
+
+_logger = logging.getLogger(__name__)
+
+class AuthController(http.Controller):
+    # Secret key for JWT signing - should be in config
+    JWT_SECRET = 'your-secret-key'  # Move to secure configuration
+    JWT_EXPIRATION = 24  # hours
+
+    @http.route('/api/v1/auth/register', auth='public', methods=['POST'], csrf=False)
+    def register(self, **kwargs):
+        try:
+            data = json.loads(request.httprequest.data)
+            email = data.get('email')
+            password = data.get('password')
+            name = data.get('name')
+
+            # Create new user
+            user = request.env['res.users'].sudo().create({
+                'name': name,
+                'login': email,
+                'password': password,  # Plain password, Odoo handles the hashing
+            })
+            
+            return json.dumps({
+                'status': 'success',
+                'message': 'User registered successfully',
+                'user': {
+                    'id': user.id,
+                    'name': user.name,
+                    'email': user.login
+                }
+            })
+            
+        except Exception as e:
+            _logger.error(f"Error during registration: {str(e)}")  # Log the error
+            return json.dumps({
+                'status': 'error',
+                'message': str(e)
+            })
+
+    @http.route('/api/v1/auth/login', auth='public', methods=['POST'], csrf=False)
+    def login(self, **kwargs):
+        try:
+            data = json.loads(request.httprequest.data)
+            email = data.get('email')
+            password = data.get('password')
+            
+            # Get the database name
+            db_name = request.env.cr.dbname
+            
+            # Authenticate using the built-in authenticate method
+            uid = request.env['res.users'].authenticate(
+                db_name,
+                email,
+                password,
+                None  # Pass None if user_agent_env is not required
+            )
+            
+            if not uid:
+                return json.dumps({
+                    'status': 'error',
+                    'message': 'Invalid credentials'
+                })
+            
+            # Get user record
+            user = request.env['res.users'].sudo().browse(uid)
+            
+            # Generate JWT token
+            token = self._generate_jwt(user)
+            
+            return json.dumps({
+                'status': 'success',
+                'token': token,
+                'user': {
+                    'id': user.id,
+                    'name': user.name,
+                    'email': user.login
+                }
+            })
+            
+        except AccessDenied:
+            return json.dumps({
+                'status': 'error',
+                'message': 'Invalid credentials'
+            })
+        except Exception as e:
+            _logger.error(f"Error during login: {str(e)}")  # Log the error
+            return json.dumps({
+                'status': 'error',
+                'message': str(e)
+            })
+
+    def _generate_jwt(self, user):
+        payload = {
+            'user_id': user.id,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=self.JWT_EXPIRATION),
+            'iat': datetime.datetime.utcnow()
+        }
+        return jwt.encode(payload, self.JWT_SECRET, algorithm='HS256')
+
+    @http.route('/api/v1/auth/verify', auth='public', methods=['GET'], csrf=False)
+    def verify_token(self, **kwargs):
+        auth_header = request.httprequest.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return json.dumps({
+                'status': 'error',
+                'message': 'No token provided'
+            })
+
+        token = auth_header.split(' ')[1]
+        try:
+            payload = jwt.decode(token, self.JWT_SECRET, algorithms=['HS256'])
+            return json.dumps({
+                'status': 'success',
+                'valid': True
+            })
+        except jwt.ExpiredSignatureError:
+            return json.dumps({
+                'status': 'error',
+                'message': 'Token has expired'
+            })
+        except jwt.InvalidTokenError:
+            return json.dumps({
+                'status': 'error',
+                'message': 'Invalid token'
+            })
+        except Exception as e:
+            _logger.error(f"Error during token verification: {str(e)}")  # Log the error
+            return json.dumps({
+                'status': 'error',
+                'message': str(e)
+            })
+
 
 class EcommerceAPI(http.Controller):
     @http.route('/api/v1/products', auth='public', methods=['GET'], csrf=False)
@@ -59,258 +193,13 @@ class EcommerceAPI(http.Controller):
             }
         })
 
-
-
-class AuthController(http.Controller):
-    # Secret key for JWT signing - should be in config
-    JWT_SECRET = 'your-secret-key'  # Move to secure configuration
-    JWT_EXPIRATION = 24  # hours
-
-    #@http.route('/api/v1/auth/register', auth='public', methods=['POST'], csrf=False)
-    # def register(self, **kwargs):
-    #     try:
-    #         data = json.loads(request.httprequest.data)
-            
-    #         # Check if user already exists
-    #         existing_user = request.env['res.users'].sudo().search([
-    #             ('login', '=', data.get('email'))
-    #         ])
-            
-    #         if existing_user:
-    #             return json.dumps({
-    #                 'status': 'error',
-    #                 'message': 'User already exists'
-    #             })
-
-    #         # Create partner first
-    #         partner = request.env['res.partner'].sudo().create({
-    #             'name': data.get('name'),
-    #             'email': data.get('email'),
-    #             'phone': data.get('phone'),
-    #             'street': data.get('address')
-    #         })
-
-    #         # Create user
-    #         user = request.env['res.users'].sudo().create({
-    #             'name': data.get('name'),
-    #             'login': data.get('email'),
-    #             'password': data.get('password'),
-    #             'partner_id': partner.id,
-    #             'groups_id': [(6, 0, [request.env.ref('base.group_portal').id])]
-    #         })
-
-    #         # Generate JWT token
-    #         token = self._generate_jwt(user)
-
-    #         return json.dumps({
-    #             'status': 'success',
-    #             'token': token,
-    #             'user': {
-    #                 'id': user.id,
-    #                 'name': user.name,
-    #                 'email': user.login
-    #             }
-    #         })
-
-    #     except Exception as e:
-    #         return json.dumps({
-    #             'status': 'error',
-    #             'message': str(e)
-    #         })
-
-    @http.route('/api/v1/auth/register', auth='public', methods=['POST'], csrf=False)
-    def register(self, **kwargs):
-        try:
-            data = json.loads(request.httprequest.data)
-            email = data.get('email')
-            password = data.get('password')
-            name = data.get('name')
-
-            # Hash the password before storing it
-            hashed_password = request.env['res.users']._crypt_context.hash(password)
-            
-            # Create new user
-            user = request.env['res.users'].sudo().create({
-                'name': name,
-                'login': email,
-                'password': hashed_password,
-            })
-            
-            return json.dumps({
-                'status': 'success',
-                'message': 'User registered successfully',
-                'user': {
-                    'id': user.id,
-                    'name': user.name,
-                    'email': user.login
-                }
-            })
-            
-        except Exception as e:
-            return json.dumps({
-                'status': 'error',
-                'message': str(e)
-            })
-
-
-    # @http.route('/api/v1/auth/login', auth='public', methods=['POST'], csrf=False)
-    # def login(self, **kwargs):
-    #     try:
-    #         data = json.loads(request.httprequest.data)
-    #         email = data.get('email')
-    #         password = data.get('password')
-            
-    #         # Ensure data is parsed correctly
-    #         print(f"Data: {data}")
-            
-    #         # Get the database name
-    #         db_name = request.env.cr.dbname
-            
-    #         # Authenticate using the built-in authenticate method
-    #         uid = request.env['res.users'].authenticate(
-    #             db_name,
-    #             email,
-    #             password
-    #         )
-            
-    #         if not uid:
-    #             return json.dumps({
-    #                 'status': 'error',
-    #                 'message': 'Invalid credentials'
-    #             })
-            
-    #         # Get user record
-    #         user = request.env['res.users'].sudo().browse(uid)
-            
-    #         # Generate JWT token
-    #         token = self._generate_jwt(user)
-            
-    #         # Debugging logs
-    #         print(f"User ID: {user.id}")
-    #         print(f"Token: {token}")
-            
-    #         return json.dumps({
-    #             'status': 'success',
-    #             'token': token,
-    #             'user': {
-    #                 'id': user.id,
-    #                 'name': user.name,
-    #                 'email': user.login
-    #             }
-    #         })
-            
-    #     except AccessDenied:
-    #         return json.dumps({
-    #             'status': 'error',
-    #             'message': 'Invalid credentials'
-    #         })
-    #     except Exception as e:
-    #         # Debugging log
-    #         print(f"Exception: {str(e)}")
-    #         return json.dumps({
-    #             'status': 'error',
-    #             'message': str(e)
-    #         })
-
-    # def _generate_jwt(self, user):
-    #     payload = {
-    #         'user_id': user.id,
-    #         'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=self.JWT_EXPIRATION),
-    #         'iat': datetime.datetime.utcnow()
-    #     }
-    #     print(f"Payload: {payload}")  # Debugging log
-    #     return jwt.encode(payload, self.JWT_SECRET, algorithm='HS256')
-    @http.route('/api/v1/auth/login', auth='public', methods=['POST'], csrf=False)
-    def login(self, **kwargs):
-        try:
-            data = json.loads(request.httprequest.data)
-            email = data.get('email')
-            password = data.get('password')
-            
-            # Get the database name
-            db_name = request.env.cr.dbname
-            
-            # Authenticate using the built-in authenticate method
-            uid = request.env['res.users'].authenticate(
-                db_name,
-                email,
-                password,
-                None  # Pass None if user_agent_env is not required
-            )
-            
-            if not uid:
-                return json.dumps({
-                    'status': 'error',
-                    'message': 'Invalid credentials'
-                })
-            
-            # Get user record
-            user = request.env['res.users'].sudo().browse(uid)
-            
-            # Generate JWT token
-            token = self._generate_jwt(user)
-            
-            return json.dumps({
-                'status': 'success',
-                'token': token,
-                'user': {
-                    'id': user.id,
-                    'name': user.name,
-                    'email': user.login
-                }
-            })
-            
-        except AccessDenied:
-            return json.dumps({
-                'status': 'error',
-                'message': 'Invalid credentials'
-            })
-        except Exception as e:
-            return json.dumps({
-                'status': 'error',
-                'message': str(e)
-            })
-
-    def _generate_jwt(self, user):
-        payload = {
-            'user_id': user.id,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=self.JWT_EXPIRATION),
-            'iat': datetime.datetime.utcnow()
-        }
-        return jwt.encode(payload, self.JWT_SECRET, algorithm='HS256')
-
-
-    @http.route('/api/v1/auth/verify', auth='public', methods=['GET'], csrf=False)
-    def verify_token(self, **kwargs):
-        auth_header = request.httprequest.headers.get('Authorization')
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return json.dumps({
-                'status': 'error',
-                'message': 'No token provided'
-            })
-
-        token = auth_header.split(' ')[1]
-        try:
-            payload = jwt.decode(token, self.JWT_SECRET, algorithms=['HS256'])
-            return json.dumps({
-                'status': 'success',
-                'valid': True
-            })
-        except jwt.ExpiredSignatureError:
-            return json.dumps({
-                'status': 'error',
-                'message': 'Token has expired'
-            })
-        except jwt.InvalidTokenError:
-            return json.dumps({
-                'status': 'error',
-                'message': 'Invalid token'
-            })
-
-            
+       
 class Odoocontroller(http.Controller):
-    @http.route('/odoocontroller/odoocontroller', auth='public')
-    def index(self, **kw):
+    @http.route('/odooc', auth='public')
+    def index(self, **kw): 
+        _logger.info("Received a request") 
+        _logger.info("Headers: %s", request.httprequest.headers) 
+        _logger.info("Arguments: %s", kw) 
         return "Hello, there"
 
 #     @http.route('/odoocontroller/odoocontroller/objects', auth='public')

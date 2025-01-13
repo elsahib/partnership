@@ -2,3 +2,4 @@
 config/
 config/odoo.conf
 config/*
+*.pyc
