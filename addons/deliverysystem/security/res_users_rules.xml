@@ -1,0 +1,63 @@
+<!-- File: delivery_system/security/record_rules.xml -->
+<odoo>
+    <data noupdate="1">
+        <!-- Admin Rules -->
+        <record id="rule_admin_all_access" model="ir.rule">
+            <field name="name">Admin Full Access</field>
+            <field name="model_id" ref="base.model_res_users"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Driver Rules -->
+        <record id="rule_driver_deliveries" model="ir.rule">
+            <field name="name">Driver Delivery Access</field>
+            <field name="model_id" ref="model_delivery_route"/>
+            <field name="domain_force">[('delivery_partner_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_driver'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Customer Rules -->
+        <record id="rule_customer_orders" model="ir.rule">
+            <field name="name">Customer Order Access</field>
+            <field name="model_id" ref="model_sale_order"/>
+            <field name="domain_force">[('partner_id', '=', user.partner_id.id)]</field>
+            <field name="groups" eval="[(4, ref('group_customer'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Warehouse Rules -->
+        <record id="rule_warehouse_deliveries" model="ir.rule">
+            <field name="name">Warehouse Delivery Access</field>
+            <field name="model_id" ref="model_delivery_parcel"/>
+            <field name="groups" eval="[(4, ref('group_warehouse'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Global Delivery Order Rule -->
+        <record id="rule_global_delivery_visibility" model="ir.rule">
+            <field name="name">Global Delivery Orders</field>
+            <field name="model_id" ref="model_delivery_block"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+    </data>
+</odoo>

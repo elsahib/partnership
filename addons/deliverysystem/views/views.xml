@@ -1,7 +1,7 @@
 <odoo>
   <data>
     <!-- explicit list view definition -->
-<!--
+<!-- 
     <record model="ir.ui.view" id="odoocontroller.list">
       <field name="name">odoocontroller list</field>
       <field name="model">odoocontroller.odoocontroller</field>
@@ -54,7 +54,7 @@
     <menuitem name="List" id="odoocontroller.menu_1_list" parent="odoocontroller.menu_1"
               action="odoocontroller.action_window"/>
     <menuitem name="Server to list" id="odoocontroller" parent="odoocontroller.menu_2"
-              action="odoocontroller.action_server"/>
--->
+              action="odoocontroller.action_server"/> -->
+
   </data>
 </odoo>

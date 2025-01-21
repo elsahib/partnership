@@ -194,24 +194,11 @@ class EcommerceAPI(http.Controller):
         })
 
        
-class Odoocontroller(http.Controller):
+class Delieverysystem(http.Controller):
     @http.route('/odooc', auth='public')
     def index(self, **kw): 
         _logger.info("Received a request") 
         _logger.info("Headers: %s", request.httprequest.headers) 
         _logger.info("Arguments: %s", kw) 
         return "Hello, there"
-
-#     @http.route('/odoocontroller/odoocontroller/objects', auth='public')
-#     def list(self, **kw):
-#         return http.request.render('odoocontroller.listing', {
-#             'root': '/odoocontroller/odoocontroller',
-#             'objects': http.request.env['odoocontroller.odoocontroller'].search([]),
-#         })
-
-#     @http.route('/odoocontroller/odoocontroller/objects/<model("odoocontroller.odoocontroller"):obj>', auth='public')
-#     def object(self, obj, **kw):
-#         return http.request.render('odoocontroller.object', {
-#             'object': obj
-#         })
 
