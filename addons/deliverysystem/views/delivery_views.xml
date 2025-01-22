@@ -1,43 +1,42 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record model="ir.ui.view" id="deliverysystem">
-      <field name="name">deliverysystem list</field>
-      <field name="model">delivery.partner</field>
-      <field name="arch" type="xml">
-        <list>
-          <field name="name"/>
-          <field name="contact_info"/>
-          <field name="status"/>
-        </list>
-      </field>
-    </record>
+  <record id="deliverysystem.delivery_partner_form" model="ir.ui.view">
+    <field name="name">delivery.partner.form</field>
+    <field name="model">delivery.partner</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <group>
+            <field name="name" />
+            <field name="contact_info" />
+            <field name="status" />
+          </group>
+        </sheet>
+      </form>
+    </field>
 
-    <!-- Action for Delivery Partner -->
-    <record id="deliverysystem.action_delivery_partner" model="ir.actions.act_window">
-        <field name="name">Delivery Partners</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">delivery.partner</field>
-        <field name="view_mode">tree,form</field>
-        <field name="help" type="html">
-            <p class="oe_view_nocontent_create">
-                Click to create a new delivery partner.
-            </p>
-        </field>
-    </record>
+  </record>
+  <record id="deliverysystem.delivery_partner_action" model="ir.actions.act_window">
+    <field name="name">Partners</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">delivery.partner</field>
+    <field name="view_mode">list,form</field>
+  </record>
 
-    <!-- Menu Item -->
-    <menuitem id="deliverysystem.delivery_root" 
-              name="DeliverySystem"
-              sequence="10"
-              web_icon="deliverysystem,static/description/icon.png"/>
+  <menuitem id="deliverysystem.delivery_root"
+    name="Delivery System"
+    sequence="10" />
+  <menuitem id="deliverysystem.delivery_partner_menu"
+    name="Delivery Partners"
+    action="deliverysystem.delivery_partner_action"
+    parent="deliverysystem.delivery_root"
+  />
+  <menuitem
+    id="deliverysystem.test"
+    name="test"
+    parent="deliverysystem.delivery_root"
+  />
 
-    <menuitem id="deliverysystem.delivery_partner_root" 
-              name="DeliveryPartners"
-              parent="deliverysystem.delivery_root"/>
 
-
-    <menuitem id="delivery_partner" 
-              name="DeliveryPartners"
-              parent="deliverysystem.delivery_partner_root" action="deliverysystem.action_delivery_partner"/>
 </odoo>
