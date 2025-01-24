@@ -2,7 +2,7 @@
 <odoo>
 
   <!-- Delivery Parcel View -->
-  <record id="delivery_parcel_form" model="ir.ui.view">
+  <!-- <record id="delivery_parcel_form" model="ir.ui.view">
     <field name="name">delivery.parcel.form</field>
     <field name="model">delivery.parcel</field>
     <field name="arch" type="xml">
@@ -18,7 +18,39 @@
         </sheet>
       </form>
     </field>
-  </record>
+  </record> -->
+  <record id="delivery_parcel_form" model="ir.ui.view">
+    <field name="name">delivery.parcel.form</field>
+    <field name="model">delivery.parcel</field>
+    <field name="arch" type="xml">
+        <form>
+            <sheet>
+                <group>
+                    <group string="Parcel Information">
+                        <field name="prcl_ref" placeholder="Enter Parcel Reference"/>
+                        <field name="tracking_id"/>
+                        <field name="parcel_dimensions"/>
+                        <field name="parcel_weight"/>
+                        <field name="parcel_category"/>
+                    </group>
+                    <group string="Delivery Details">
+                        <field name="recipient_id">
+                            <tree><field name="name"/></tree>
+                        </field>
+                        <field name="recipient_id.street" string="Recipient Address" readonly="1"/>
+                        <field name="stop_id"/>
+                        <field name="route_id"/>
+                        <field name="delivery_partner_id" attrs="{'invisible': [('status', 'not in', ('in_transit', 'delivered'))]}"/>
+                    </group>
+                    <group string="Status and Tracking">
+                        <field name="status"/>
+                        <field name="current_location"/>
+                    </group>
+                </group>
+            </sheet>
+        </form>
+    </field>
+</record>
 
   <!-- Delivery Route View -->
   <record id="delivery_route_form" model="ir.ui.view">
