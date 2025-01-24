@@ -51,7 +51,7 @@
         <!-- Global Delivery Order Rule -->
         <record id="rule_global_delivery_visibility" model="ir.rule">
             <field name="name">Global Delivery Orders</field>
-            <field name="model_id" ref="model_delivery_block"/>
+            <field name="model_id" ref="model_delivery_route"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_admin'))]"/>
             <field name="perm_read" eval="True"/>

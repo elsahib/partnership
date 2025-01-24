@@ -1,40 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-  <record id="deliverysystem.delivery_partner_form" model="ir.ui.view">
-    <field name="name">delivery.partner.form</field>
-    <field name="model">delivery.partner</field>
+  <!-- Delivery Parcel View -->
+  <record id="delivery_parcel_form" model="ir.ui.view">
+    <field name="name">delivery.parcel.form</field>
+    <field name="model">delivery.parcel</field>
     <field name="arch" type="xml">
       <form>
         <sheet>
           <group>
-            <field name="name" />
-            <field name="contact_info" />
-            <field name="status" />
+            <field name="prcl_ref"/>
+            <field name="tracking_id"/>
+            <field name="status"/>
+            <field name="recipient_id"/>
+            <field name="route_id"/>
           </group>
         </sheet>
       </form>
     </field>
-
   </record>
-  <record id="deliverysystem.delivery_partner_action" model="ir.actions.act_window">
-    <field name="name">Partners</field>
+
+  <!-- Delivery Route View -->
+  <record id="delivery_route_form" model="ir.ui.view">
+    <field name="name">delivery.route.form</field>
+    <field name="model">delivery.route</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <group>
+            <field name="route_id"/>
+            <field name="generated_time"/>
+            <field name="delivery_partner_id"/>
+            <field name="distance"/>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <!-- Delivery Stop View -->
+  <record id="delivery_stop_form" model="ir.ui.view">
+    <field name="name">delivery.stop.form</field>
+    <field name="model">delivery.stop</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <group>
+            <field name="address"/>
+            <field name="stop_type"/>
+            <field name="status"/>
+            <field name="route_id"/>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <!-- Actions for these views -->
+  <record id="delivery_parcel_action" model="ir.actions.act_window">
+    <field name="name">Parcels</field>
     <field name="type">ir.actions.act_window</field>
-    <field name="res_model">delivery.partner</field>
+    <field name="res_model">delivery.parcel</field>
     <field name="view_mode">list,form</field>
   </record>
 
+  <record id="delivery_route_action" model="ir.actions.act_window">
+    <field name="name">Routes</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">delivery.route</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <record id="delivery_stop_action" model="ir.actions.act_window">
+    <field name="name">Stops</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">delivery.stop</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <!-- Menu items -->
+  
   <menuitem id="deliverysystem.delivery_root"
     name="Delivery System"
     sequence="10" />
-  <menuitem id="deliverysystem.delivery_partner_menu"
-    name="Delivery Partners"
-    action="deliverysystem.delivery_partner_action"
-    parent="deliverysystem.delivery_root"
-  />
+
   <menuitem
     id="deliverysystem.test"
     name="test"
+    parent="deliverysystem.delivery_root"
+  />
+<menuitem 
+    id="delivery_parcel_menu"
+    name="Parcels"
+    action="delivery_parcel_action"
+    parent="deliverysystem.delivery_root"
+  />
+
+  <menuitem 
+    id="delivery_route_menu"
+    name="Routes"
+    action="delivery_route_action"
+    parent="deliverysystem.delivery_root"
+  />
+
+  <menuitem 
+    id="delivery_stop_menu"
+    name="Stops"
+    action="delivery_stop_action"
     parent="deliverysystem.delivery_root"
   />
 
