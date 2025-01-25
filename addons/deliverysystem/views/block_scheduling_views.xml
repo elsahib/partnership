@@ -1,0 +1,57 @@
+<odoo>
+    <record id="delivery_block_scheduling_form" model="ir.ui.view">
+        <field name="name">delivery.block.scheduling.form</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="after"> <group string="Block Scheduling">
+                    <field name="pay"/>
+                    <field name="seats_available"/>
+                    <field name="registration_ids"/>
+                    <field name="route_ids"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="delivery_block_scheduling_tree" model="ir.ui.view">
+        <field name="name">delivery.block.scheduling.tree</field>
+        <field name="model">calendar.event</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="start"/>
+                <field name="stop"/>
+                <field name="pay"/>
+                <field name="seats_available"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="delivery_block_scheduling_search" model="ir.ui.view">
+        <field name="name">delivery.block.scheduling.search</field>
+        <field name="model">calendar.event</field>
+        <field name="arch" type="xml">
+            <search string="Search Block Schedules">
+                <field name="name"/>
+                <field name="start"/>
+                <field name="stop"/>
+                <filter string="This Month" name="this_month" domain="[('start', '&gt;=', context_today().replace(day=1)), ('start', '&lt;=', (context_today() + relativedelta(months=1, day=1, days=-1)))]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="delivery_block_scheduling_action" model="ir.actions.act_window">
+        <field name="name">Block Scheduling</field>
+        <field name="res_model">calendar.event</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="search_view_id" ref="delivery_block_scheduling_search"/>
+    </record>
+
+    <menuitem id="deliverysystem.block_scheduling_menu"
+              name="Block Scheduling"
+              parent="deliverysystem.delivery_root"
+              action="delivery_block_scheduling_action"
+              sequence="20"/>
+
+</odoo>

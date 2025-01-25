@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <!-- Delivery Parcel View -->
+  <!-- Delivery Parcel Views -->
+
   <record id="delivery_parcel_form" model="ir.ui.view">
     <field name="name">delivery.parcel.form</field>
     <field name="model">delivery.parcel</field>
@@ -9,22 +10,25 @@
         <sheet>
           <group>
             <group string="Parcel Information">
-              <field name="prcl_ref" placeholder="Enter Parcel Reference" />
-              <field name="tracking_id" />
-              <field name="parcel_dimensions" />
-              <field name="parcel_weight" />
+              <field name="prcl_ref" placeholder="e.g., PRCL-2024-001" required="1" />
+              <field name="sale_order_id" />
+              <field name="tracking_id" placeholder="e.g., TRK1234567890" required="1" />
+              <field name="parcel_dimensions" placeholder="e.g., 10x20x30 cm" />
+              <field name="parcel_weight" widget="float" placeholder="e.g., 2.5 kg" />
               <field name="parcel_category" />
+              <field name="description" />
             </group>
             <group string="Delivery Details">
-              <field name="recipient_id" />
-              <field name="stop_id" />
-              <field name="route_id" />
+              <field name="recipient_id" options="{'no_create_edit': True}" />
+              <field name="stop_id" options="{'no_create_edit': True}" />
+              <field name="route_id" options="{'no_create_edit': True}" />
               <field name="delivery_partner_id"
-                invisible="status not in ('in_transit', 'delivered')"/>
+                invisible="status not in ('in_transit', 'delivered')"
+                options="{'no_create_edit': True}" />
             </group>
             <group string="Status and Tracking">
               <field name="status" />
-              <field name="current_location" />
+              <field name="current_location" widget="map" />
             </group>
           </group>
         </sheet>
@@ -32,6 +36,36 @@
     </field>
   </record>
 
+  <record id="delivery_parcel_tree" model="ir.ui.view">
+    <field name="name">delivery.parcel.tree</field>
+    <field name="model">delivery.parcel</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="prcl_ref" />
+        <field name="tracking_id" />
+        <field name="recipient_id" />
+        <field name="route_id" />
+        <field name="status" widget="badge" decoration-success="status == 'delivered'" decoration-danger="status == 'not_delivered'" decoration-info="status in ('pending_packing', 'awaiting_route', 'awaiting_partner')" decoration-warning="status == 'in_transit'"/>
+      </list>
+    </field>
+  </record>
+
+<record id="delivery_parcel_search" model="ir.ui.view">
+    <field name="name">delivery.parcel.search</field>
+    <field name="model">delivery.parcel</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="prcl_ref"/>
+            <field name="tracking_id"/>
+            <field name="recipient_id"/>
+            <field name="status"/>
+            <filter name="pending_packing" string="Pending Packing" domain="[('status', '=', 'pending_packing')]"/>
+            <filter name="in_transit" string="In Transit" domain="[('status', '=', 'in_transit')]"/>
+            <filter name="delivered" string="Delivered" domain="[('status', '=', 'delivered')]"/>
+            <filter name="not_delivered" string="Not Delivered" domain="[('status', '=', 'not_delivered')]"/>
+        </search>
+    </field>
+</record>
   <!-- Delivery Route View -->
   <record id="delivery_route_form" model="ir.ui.view">
     <field name="name">delivery.route.form</field>

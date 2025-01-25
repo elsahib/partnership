@@ -25,8 +25,8 @@ Long description of module's purpose
         "security/res_users_groups.xml",
         'security/ir.model.access.csv',
         "security/res_users_rules.xml",
-        "views/delivery_views.xml",
-        'views/views.xml',
+        "views/delivery_parcel_views.xml",
+        'views/block_scheduling_views.xml',
         'views/templates.xml',
         
     ],
