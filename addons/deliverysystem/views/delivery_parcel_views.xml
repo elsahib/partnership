@@ -131,11 +131,6 @@
     sequence="10" />
 
   <menuitem
-    id="deliverysystem.test"
-    name="test"
-    parent="deliverysystem.delivery_root"
-  />
-  <menuitem
     id="delivery_parcel_menu"
     name="Parcels"
     action="delivery_parcel_action"

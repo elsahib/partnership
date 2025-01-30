@@ -1,57 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="delivery_block_scheduling_form" model="ir.ui.view">
-        <field name="name">delivery.block.scheduling.form</field>
-        <field name="model">calendar.event</field>
-        <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//div[@name='button_box']" position="after"> <group string="Block Scheduling">
-                    <field name="pay"/>
-                    <field name="seats_available"/>
-                    <field name="registration_ids"/>
-                    <field name="route_ids"/>
-                </group>
-            </xpath>
-        </field>
-    </record>
 
-    <record id="delivery_block_scheduling_tree" model="ir.ui.view">
-        <field name="name">delivery.block.scheduling.tree</field>
-        <field name="model">calendar.event</field>
+    <record id="view_block_schedule_list" model="ir.ui.view">
+        <field name="name">block.schedule.list</field>
+        <field name="model">block.schedule</field>
         <field name="arch" type="xml">
-            <list>
-                <field name="name"/>
-                <field name="start"/>
-                <field name="stop"/>
-                <field name="pay"/>
-                <field name="seats_available"/>
+            <list string="Delivery Blocks">
+                <field name="name" />
+                <field name="start_datetime" />
+                <field name="end_datetime" />
+                <field name="pay" />
+                <field name="seats_available" />
+                <field name="remaining_seats" />
+                <field name="state" decoration-info="state == 'draft'"
+                    decoration-success="state in ('open', 'in_progress')"
+                    decoration-warning="state == 'full'"
+                    decoration-muted="state == 'cancelled'"
+                    widget="badge" />
+                <field name="user_id" widget="many2one_avatar" />
+                <field name="company_id" groups="base.group_multi_company" />
             </list>
         </field>
     </record>
 
-    <record id="delivery_block_scheduling_search" model="ir.ui.view">
-        <field name="name">delivery.block.scheduling.search</field>
-        <field name="model">calendar.event</field>
+    <!-- Form View -->
+    <record id="view_block_schedule_form" model="ir.ui.view">
+        <field name="name">block.schedule.form</field>
+        <field name="model">block.schedule</field>
         <field name="arch" type="xml">
-            <search string="Search Block Schedules">
-                <field name="name"/>
-                <field name="start"/>
-                <field name="stop"/>
-                <filter string="This Month" name="this_month" domain="[('start', '&gt;=', context_today().replace(day=1)), ('start', '&lt;=', (context_today() + relativedelta(months=1, day=1, days=-1)))]"/>
+            <form string="Delivery Block">
+                <header>
+                    <button name="action_open_registration" string="Open Registration"
+                        type="object" class="oe_highlight"
+                        invisible="state != 'draft'" />
+                    <button name="action_register" string="Register"
+                        type="object" class="oe_highlight"
+                        invisible="state != 'open'" />
+                    <button name="action_unregister" string="Unregister"
+                        type="object"
+                        invisible="state not in ['open', 'full']" />
+                    <button name="action_start" string="Start Block"
+                        type="object" class="oe_highlight"
+                        invisible="state not in ['open', 'full']" />
+                    <button name="action_complete" string="Complete"
+                        type="object" class="oe_highlight"
+                        invisible="state != 'in_progress'" />
+                    <button name="action_cancel" string="Cancel"
+                        type="object"
+                        invisible="state in ['completed', 'cancelled']" />
+                    <button name="action_reset_to_draft" string="Reset to Draft"
+                        type="object" groups="base.group_system"
+                        invisible="state == 'draft'" />
+                    <field name="state" widget="statusbar"
+                        statusbar_visible="draft,open,in_progress,completed" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Block Name" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="start_datetime" />
+                            <field name="end_datetime" />
+                            <field name="pay" />
+                            <field name="seats_available" />
+                            <field name="remaining_seats" />
+                        </group>
+                        <group>
+                            <field name="user_id" widget="many2one_avatar" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Registered Drivers" name="drivers">
+                            <field name="driver_ids" widget="many2many_avatar">
+                                <kanban>
+                                    <field name="id" />
+                                    <field name="name" />
+                                    <field name="email" />
+                                    <field name="phone" />
+                                    <templates>
+                                        <t t-name="kanban-box">
+                                            <div class="oe_kanban_global_click">
+                                                <div class="o_kanban_image">
+                                                    <img
+                                                        t-att-src="kanban_image('res.partner', 'image_128', record.id.raw_value)"
+                                                        alt="Partner" />
+                                                </div>
+                                                <div class="oe_kanban_details">
+                                                    <strong class="o_kanban_record_title">
+                                                        <field name="name" />
+                                                    </strong>
+                                                    <div t-if="record.email.value">
+                                                        <field name="email" />
+                                                    </div>
+                                                    <div t-if="record.phone.value">
+                                                        <field name="phone" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </templates>
+                                </kanban>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <field name="name" />
+                                            <field name="email" />
+                                            <field name="phone" />
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Routes" name="routes">
+                            <field name="route_ids" />
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" />
+                        </page>
+                    </notebook>
+                </sheet>
+                <!-- <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div> -->
+            </form>
+        </field>
+    </record>
+
+    <!-- Calendar View -->
+    <record id="view_block_schedule_calendar" model="ir.ui.view">
+        <field name="name">block.schedule.calendar</field>
+        <field name="model">block.schedule</field>
+        <field name="arch" type="xml">
+            <calendar string="Delivery Blocks"
+                date_start="start_datetime"
+                date_stop="end_datetime"
+                event_open_popup="true"
+                mode="month"
+                color="state">
+                <field name="name" />
+                <field name="pay" />
+                <field name="seats_available" />
+                <field name="remaining_seats" />
+                <field name="state" />
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_block_schedule_search" model="ir.ui.view">
+        <field name="name">block.schedule.search</field>
+        <field name="model">block.schedule</field>
+        <field name="arch" type="xml">
+            <search string="Search Delivery Blocks">
+                <field name="name" />
+                <field name="user_id" />
+                <field name="driver_ids" />
+                <field name="route_ids" />
+                <separator />
+                <filter string="My Blocks" name="my_blocks"
+                    domain="[('user_id', '=', uid)]" />
+                <filter string="Open Blocks" name="open_blocks"
+                    domain="[('state', '=', 'open')]" />
+                <filter string="In Progress" name="in_progress"
+                    domain="[('state', '=', 'in_progress')]" />
+                <separator />
+                <filter string="Upcoming" name="upcoming"
+                    domain="[('start_datetime', '>=', context_today().strftime('%Y-%m-%d'))]" />
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_by_state"
+                        context="{'group_by': 'state'}" />
+                    <filter string="Responsible" name="group_by_user"
+                        context="{'group_by': 'user_id'}" />
+                    <filter string="Company" name="group_by_company"
+                        context="{'group_by': 'company_id'}"
+                        groups="base.group_multi_company" />
+                </group>
             </search>
         </field>
     </record>
 
-    <record id="delivery_block_scheduling_action" model="ir.actions.act_window">
-        <field name="name">Block Scheduling</field>
-        <field name="res_model">calendar.event</field>
-        <field name="view_mode">list,form,calendar</field>
-        <field name="search_view_id" ref="delivery_block_scheduling_search"/>
+    <!-- Action -->
+    <record id="action_block_schedule" model="ir.actions.act_window">
+        <field name="name">Delivery Blocks</field>
+        <field name="res_model">block.schedule</field>
+        <field name="view_mode">calendar,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first delivery block!
+            </p>
+            <p>
+                Organize your delivery blocks and manage driver registrations.
+            </p>
+        </field>
     </record>
 
-    <menuitem id="deliverysystem.block_scheduling_menu"
-              name="Block Scheduling"
-              parent="deliverysystem.delivery_root"
-              action="delivery_block_scheduling_action"
-              sequence="20"/>
-
+    <!-- Menu -->
+    <menuitem
+        id="menu_block_schedule"
+        name="Delivery Blocks"
+        action="action_block_schedule"
+        parent="deliverysystem.delivery_root"
+    />
 </odoo>

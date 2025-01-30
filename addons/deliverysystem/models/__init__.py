@@ -2,7 +2,7 @@
 
 from . import res_users
 from . import res_partner
-from . import calender_event
+from . import block_schedule
 from . import sale_order
 from . import delivery_parcel
 from . import delivery_stop

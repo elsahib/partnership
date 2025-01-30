@@ -12,7 +12,7 @@ class DeliveryRoute(models.Model):
         "hr.employee", string="Assigned Delivery Partner"
     )
     expected_duration = fields.Float(string="Expected Duration (Hours)")
-    event_id = fields.Many2one('calendar.event', string="Delivery Block")
+    event_id = fields.Many2one('block.schedule', string="Delivery Block")
     google_maps_route_id = fields.Char(string="Google Maps Route ID") 
     estimated_arrival_time = fields.Datetime(string="Estimated Arrival Time")
     distance = fields.Float(string="Distance (KM)") 

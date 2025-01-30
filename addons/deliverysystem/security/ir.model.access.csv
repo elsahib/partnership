@@ -13,3 +13,8 @@ access_delivery_parcel_admin,delivery.parcel.admin,model_delivery_parcel,base.gr
 access_delivery_parcel_driver,delivery.parcel.driver,model_delivery_parcel,deliverysystem.group_driver,1,1,0,0
 access_delivery_parcel_warehouse,delivery.parcel.warehouse,model_delivery_parcel,deliverysystem.group_warehouse,1,1,0,0
 access_delivery_parcel_customer,delivery.parcel.customer,model_delivery_parcel,base.group_public,1,0,0,0
+
+access_block_schedule_admin,block.schedule.admin,model_block_schedule,base.group_system,1,1,1,1
+access_block_schedule_driver,block.schedule.driver,model_block_schedule,deliverysystem.group_driver,1,1,0,0
+access_block_schedule_warehouse,block.schedule.warehouse,model_block_schedule,deliverysystem.group_warehouse,1,1,0,0
+access_block_schedule_customer,block.schedule.customer,model_block_schedule,base.group_public,1,0,0,0

@@ -5,11 +5,11 @@ from odoo.exceptions import ValidationError
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
-    is_delivery_partner = fields.Boolean(string="Is Delivery Partner")
+    is_delivery_partner = fields.Boolean(string="Is Delivery Partner",default=False)
     delivery_method = fields.Selection([
         ('car', 'Car'),
         ('motorbike', 'Motorbike'),
-    ], string="Delivery Method")
+    ], string="Delivery Method", default='car')
     delivery_capacity = fields.Integer(string="Delivery Capacity") 
     contact_info = fields.Char(string="Contact Information", required=True)
     status = fields.Selection(
