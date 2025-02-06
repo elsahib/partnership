@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <!-- Delivery Parcel Views -->
-
   <record id="delivery_parcel_form" model="ir.ui.view">
     <field name="name">delivery.parcel.form</field>
     <field name="model">delivery.parcel</field>
@@ -35,7 +33,6 @@
       </form>
     </field>
   </record>
-
   <record id="delivery_parcel_tree" model="ir.ui.view">
     <field name="name">delivery.parcel.tree</field>
     <field name="model">delivery.parcel</field>
@@ -45,46 +42,99 @@
         <field name="tracking_id" />
         <field name="recipient_id" />
         <field name="route_id" />
-        <field name="status" widget="badge" decoration-success="status == 'delivered'" decoration-danger="status == 'not_delivered'" decoration-info="status in ('pending_packing', 'awaiting_route', 'awaiting_partner')" decoration-warning="status == 'in_transit'"/>
+        <field name="status" widget="badge" decoration-success="status == 'delivered'"
+          decoration-danger="status == 'not_delivered'"
+          decoration-info="status in ('pending_packing', 'awaiting_route', 'awaiting_partner')"
+          decoration-warning="status == 'in_transit'" />
       </list>
     </field>
   </record>
-
-<record id="delivery_parcel_search" model="ir.ui.view">
+  <record id="delivery_parcel_search" model="ir.ui.view">
     <field name="name">delivery.parcel.search</field>
     <field name="model">delivery.parcel</field>
     <field name="arch" type="xml">
-        <search>
-            <field name="prcl_ref"/>
-            <field name="tracking_id"/>
-            <field name="recipient_id"/>
-            <field name="status"/>
-            <filter name="pending_packing" string="Pending Packing" domain="[('status', '=', 'pending_packing')]"/>
-            <filter name="in_transit" string="In Transit" domain="[('status', '=', 'in_transit')]"/>
-            <filter name="delivered" string="Delivered" domain="[('status', '=', 'delivered')]"/>
-            <filter name="not_delivered" string="Not Delivered" domain="[('status', '=', 'not_delivered')]"/>
-        </search>
+      <search>
+        <field name="prcl_ref" />
+        <field name="tracking_id" />
+        <field name="recipient_id" />
+        <field name="status" />
+        <filter name="pending_packing" string="Pending Packing"
+          domain="[('status', '=', 'pending_packing')]" />
+        <filter name="in_transit" string="In Transit" domain="[('status', '=', 'in_transit')]" />
+        <filter name="delivered" string="Delivered" domain="[('status', '=', 'delivered')]" />
+        <filter name="not_delivered" string="Not Delivered"
+          domain="[('status', '=', 'not_delivered')]" />
+      </search>
     </field>
-</record>
-  <!-- Delivery Route View -->
+  </record>
   <record id="delivery_route_form" model="ir.ui.view">
     <field name="name">delivery.route.form</field>
     <field name="model">delivery.route</field>
     <field name="arch" type="xml">
       <form>
+        <header>
+          <button name="generate_optimized_route" string="Optimize Route" type="object"
+            class="oe_highlight" invisible="stops == []" />
+          <button name="track_delivery_partner" string="Track Driver" type="object"
+            invisible="delivery_partner_id == False" />
+          <button name="action_view_map" type="object" class="oe_stat_button" icon="fa-map">
+            <span>View Map</span>
+          </button>
+        </header>
         <sheet>
           <group>
-            <field name="route_id" />
-            <field name="generated_time" />
-            <field name="delivery_partner_id" />
-            <field name="distance" />
+            <group>
+              <field name="route_id" />
+              <field name="generated_time" />
+              <field name="delivery_partner_id" />
+              <field name="event_id" />
+            </group>
+            <group>
+              <field name="distance" />
+              <field name="expected_duration" widget="float_time" />
+              <field name="estimated_arrival_time" />
+            </group>
           </group>
+          <notebook>
+            <page string="Stops" name="stops">
+              <field name="stops">
+                <list editable="bottom">
+                  <field name="sequence" widget="handle" />
+                  <field name="address" />
+                  <field name="stop_type" />
+                  <field name="status" />
+                </list>
+              </field>
+            </page>
+          </notebook>
         </sheet>
       </form>
     </field>
   </record>
-
-  <!-- Delivery Stop View -->
+  <record id="delivery_route_tree" model="ir.ui.view">
+    <field name="name">delivery.route.tree</field>
+    <field name="model">delivery.route</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="route_id" />
+        <field name="generated_time" />
+        <field name="delivery_partner_id" />
+        <field name="distance" />
+      </list>
+    </field>
+  </record>
+  <record id="delivery_route_search" model="ir.ui.view">
+    <field name="name">delivery.route.search</field>
+    <field name="model">delivery.route</field>
+    <field name="arch" type="xml">
+      <search>
+        <field name="route_id" />
+        <field name="generated_time" />
+        <field name="delivery_partner_id" />
+        <field name="distance" />
+      </search>
+    </field>
+  </record>
   <record id="delivery_stop_form" model="ir.ui.view">
     <field name="name">delivery.stop.form</field>
     <field name="model">delivery.stop</field>
@@ -101,55 +151,102 @@
       </form>
     </field>
   </record>
+  <record id="delivery_stop_search" model="ir.ui.view">
+    <field name="name">delivery.stop.search</field>
+    <field name="model">delivery.stop</field>
+    <field name="arch" type="xml">
+      <search>
+        <field name="address" />
+        <field name="stop_type" />
+        <field name="status" />
+        <field name="route_id" />
+      </search>
+    </field>
+  </record>
+  <record id="delivery_stop_tree2" model="ir.ui.view">
+    <field name="name">delivery.stop.tree</field>
+    <field name="model">delivery.stop</field>
+    <field name="arch" type="xml">
+      <list>
+        <header>
+          <button name="create_route_from_stops" string="Create Route" type="object"
+            context="{'active_model': 'delivery.stop'}"
+            invisible="0"
+            groups="deliverysystem.group_driver, deliverysystem.group_warehouse,base.group_system"
+          />
+        </header>
+        <field name="address" />
+        <field name="stop_type" />
+        <field name="status" />
+        <field name="associated_parcels" />
+        <field name="route_id" invisible="1" />
+        <field name="id" invisible="1" />
 
-  <!-- Actions for these views -->
+      </list>
+    </field>
+  </record>
+
+  <record id="delivery_route_sequence" model="ir.sequence">
+    <field name="name">Delivery Route Sequence</field>
+    <field name="code">delivery.route</field>
+    
+    <field name="prefix">ROUTE/</field>
+   
+    <field name="padding">4</field>
+  
+  </record>
+
   <record id="delivery_parcel_action" model="ir.actions.act_window">
     <field name="name">Parcels</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">delivery.parcel</field>
     <field name="view_mode">list,form</field>
   </record>
-
   <record id="delivery_route_action" model="ir.actions.act_window">
     <field name="name">Routes</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">delivery.route</field>
     <field name="view_mode">list,form</field>
   </record>
-
   <record id="delivery_stop_action" model="ir.actions.act_window">
     <field name="name">Stops</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">delivery.stop</field>
     <field name="view_mode">list,form</field>
   </record>
-
-  <!-- Menu items -->
-
+  <record id="action_plan_route" model="ir.actions.act_window">
+    <field name="name">Plan Route</field>
+    <field name="res_model">delivery.stop</field>
+    <field name="view_mode">list</field>
+    <field name="view_id" ref="delivery_stop_tree2" />
+    <field name="target">new</field>
+    <field name="context">{'active_model': 'delivery.stop'}</field>
+  </record>
   <menuitem id="deliverysystem.delivery_root"
     name="Delivery System"
     sequence="10" />
-
   <menuitem
     id="delivery_parcel_menu"
     name="Parcels"
     action="delivery_parcel_action"
     parent="deliverysystem.delivery_root"
   />
-
   <menuitem
     id="delivery_route_menu"
     name="Routes"
     action="delivery_route_action"
     parent="deliverysystem.delivery_root"
   />
-
   <menuitem
     id="delivery_stop_menu"
     name="Stops"
     action="delivery_stop_action"
     parent="deliverysystem.delivery_root"
   />
-
-
+  <menuitem
+    id="menu_plan_route"
+    name="Plan Route"
+    action="action_plan_route"
+    parent="deliverysystem.delivery_root"
+    sequence="20" />
 </odoo>

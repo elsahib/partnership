@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_deliverysystem_configuration" model="ir.actions.act_window">
+        <field name="name">Delivery System Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'deliverysystem'}</field>
+    </record>
+    <menuitem id="menu_deliverysystem_configuration"
+        name="Settings"
+        parent="deliverysystem.delivery_root"
+        action="action_deliverysystem_configuration"
+        sequence="100"
+        groups="base.group_system"/>
+</odoo>

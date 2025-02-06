@@ -1,10 +1,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-
-# 1. Delivery Partners
 class ResPartner(models.Model):
     _inherit = "res.partner"
-
     is_delivery_partner = fields.Boolean(string="Is Delivery Partner",default=False)
     delivery_method = fields.Selection([
         ('car', 'Car'),

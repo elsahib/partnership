@@ -3,7 +3,6 @@ from odoo.exceptions import ValidationError
 class DeliveryParcel(models.Model):
     _name = "delivery.parcel"
     _description = "Delivery Parcel"
-
     prcl_ref = fields.Char(string="Parcel Reference", required=True)
     sale_order_id = fields.Many2one('sale.order', string='Sale Order')
     tracking_id = fields.Char(string="Tracking ID", required=True)

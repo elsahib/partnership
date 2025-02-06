@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <record id="view_block_schedule_list" model="ir.ui.view">
         <field name="name">block.schedule.list</field>
         <field name="model">block.schedule</field>
@@ -22,8 +21,6 @@
             </list>
         </field>
     </record>
-
-    <!-- Form View -->
     <record id="view_block_schedule_form" model="ir.ui.view">
         <field name="name">block.schedule.form</field>
         <field name="model">block.schedule</field>
@@ -81,7 +78,7 @@
                                     <field name="email" />
                                     <field name="phone" />
                                     <templates>
-                                        <t t-name="kanban-box">
+                                        <t t-name="kanban-card">
                                             <div class="oe_kanban_global_click">
                                                 <div class="o_kanban_image">
                                                     <img
@@ -122,16 +119,9 @@
                         </page>
                     </notebook>
                 </sheet>
-                <!-- <div class="oe_chatter">
-                    <field name="message_follower_ids" />
-                    <field name="activity_ids" />
-                    <field name="message_ids" />
-                </div> -->
             </form>
         </field>
     </record>
-
-    <!-- Calendar View -->
     <record id="view_block_schedule_calendar" model="ir.ui.view">
         <field name="name">block.schedule.calendar</field>
         <field name="model">block.schedule</field>
@@ -150,8 +140,6 @@
             </calendar>
         </field>
     </record>
-
-    <!-- Search View -->
     <record id="view_block_schedule_search" model="ir.ui.view">
         <field name="name">block.schedule.search</field>
         <field name="model">block.schedule</field>
@@ -183,8 +171,6 @@
             </search>
         </field>
     </record>
-
-    <!-- Action -->
     <record id="action_block_schedule" model="ir.actions.act_window">
         <field name="name">Delivery Blocks</field>
         <field name="res_model">block.schedule</field>
@@ -198,8 +184,6 @@
             </p>
         </field>
     </record>
-
-    <!-- Menu -->
     <menuitem
         id="menu_block_schedule"
         name="Delivery Blocks"

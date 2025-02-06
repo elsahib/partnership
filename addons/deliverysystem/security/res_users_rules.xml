@@ -1,7 +1,6 @@
 <!-- File: delivery_system/security/record_rules.xml -->
 <odoo>
     <data noupdate="1">
-        <!-- Admin Rules -->
         <record id="rule_admin_all_access" model="ir.rule">
             <field name="name">Admin Full Access</field>
             <field name="model_id" ref="base.model_res_users"/>
@@ -12,8 +11,6 @@
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="True"/>
         </record>
-
-        <!-- Driver Rules -->
         <record id="rule_driver_deliveries" model="ir.rule">
             <field name="name">Driver Delivery Access</field>
             <field name="model_id" ref="model_delivery_route"/>
@@ -24,8 +21,6 @@
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
-
-        <!-- Customer Rules -->
         <record id="rule_customer_orders" model="ir.rule">
             <field name="name">Customer Order Access</field>
             <field name="model_id" ref="model_sale_order"/>
@@ -36,8 +31,6 @@
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="False"/>
         </record>
-
-        <!-- Warehouse Rules -->
         <record id="rule_warehouse_deliveries" model="ir.rule">
             <field name="name">Warehouse Delivery Access</field>
             <field name="model_id" ref="model_delivery_parcel"/>
@@ -47,8 +40,6 @@
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="False"/>
         </record>
-
-        <!-- Global Delivery Order Rule -->
         <record id="rule_global_delivery_visibility" model="ir.rule">
             <field name="name">Global Delivery Orders</field>
             <field name="model_id" ref="model_delivery_route"/>
