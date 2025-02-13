@@ -78,7 +78,7 @@
                                     <field name="email" />
                                     <field name="phone" />
                                     <templates>
-                                        <t t-name="kanban-card">
+                                        <t t-name="kanban-box">
                                             <div class="oe_kanban_global_click">
                                                 <div class="o_kanban_image">
                                                     <img
@@ -171,10 +171,11 @@
             </search>
         </field>
     </record>
+    
     <record id="action_block_schedule" model="ir.actions.act_window">
         <field name="name">Delivery Blocks</field>
         <field name="res_model">block.schedule</field>
-        <field name="view_mode">calendar,list,form</field>
+        <field name="view_mode">calendar,list,form,kanban</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your first delivery block!

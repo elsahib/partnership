@@ -4,6 +4,10 @@ from odoo.exceptions import UserError
 class GoogleMapsHelper(models.AbstractModel):
     _name = 'google.maps.helper'
     _description = 'Google Maps Integration Helper'
+
+    def get_api_key(self):
+        return self._get_api_key()
+        
     def _get_api_key(self):
         return self.env['ir.config_parameter'].sudo().get_param('deliverysystem.google_maps_api_key')
     def optimize_route(self, origin, destination, waypoints):

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="DeliveryRouteMap">
-        <div class="o_delivery_route_map">
-            <div id="route_map" style="height: 500px;"/>
-        </div>
+    <t t-name="deliverysystem.DeliveryRouteMap">
+        <div class="o_delivery_route_map" t-ref="route_map" style="height: 500px; width: 100%;"></div>
     </t>
 </templates>

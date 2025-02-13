@@ -8,10 +8,4 @@
         <field name="target">inline</field>
         <field name="context">{'module' : 'deliverysystem'}</field>
     </record>
-    <menuitem id="menu_deliverysystem_configuration"
-        name="Settings"
-        parent="deliverysystem.delivery_root"
-        action="action_deliverysystem_configuration"
-        sequence="100"
-        groups="base.group_system"/>
 </odoo>

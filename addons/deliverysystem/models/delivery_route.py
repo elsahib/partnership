@@ -3,7 +3,7 @@ from odoo.exceptions import ValidationError, UserError
 class DeliveryRoute(models.Model):
     _name = "delivery.route"
     _description = "Delivery Route"
-    route_id = fields.Char(string="Route ID", required=True, default=lambda self: self.env['ir.sequence'].next_by_code('delivery.route'))
+    route_id = fields.Char(string="Route ID", required=True)
     generated_time = fields.Datetime(string="Generated Time", required=True, default=fields.Datetime.now)
     stops = fields.One2many("delivery.stop", "route_id", string="Stops")
     delivery_partner_id = fields.Many2one(
@@ -12,7 +12,6 @@ class DeliveryRoute(models.Model):
     expected_duration = fields.Float(string="Expected Duration (Hours)")
     event_id = fields.Many2one('block.schedule', string="Delivery Block")
     google_maps_route_id = fields.Char(string="Google Maps Route ID") 
-    estimated_arrival_time = fields.Datetime(string="Estimated Arrival Time")
     distance = fields.Float(string="Distance (KM)") 
     polyline = fields.Text(string="Polyline")
     def generate_optimized_route(self):
@@ -43,11 +42,14 @@ class DeliveryRoute(models.Model):
         return False
     def action_view_map(self):
         self.ensure_one()
-        api_key = self.env['ir.config_parameter'].sudo().get_param('google_maps_api_key')
         return {
-            'type': 'ir.actions.act_url',
-            'url': f'/delivery/route_tracking/{self.id}?api_key={api_key}',
+            'type': 'ir.actions.client',
+            'tag': 'open_delivery_route_map_modal',
             'target': 'new',
+            'name': 'Route Map',
+            'params': {
+                'route_id': self.id,
+            }
         }
 
     @api.model

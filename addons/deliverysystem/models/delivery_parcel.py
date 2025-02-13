@@ -10,7 +10,6 @@ class DeliveryParcel(models.Model):
     status = fields.Selection(
         [("pending_packing", "Pending Packing"), 
         ("awaiting_route", "Awaiting Route Assignment"), 
-        ("awaiting_partner", "awaiting Partner Assignment"),
         ("in_transit", "In Transit"),
         ("delivered", "Delivered"),
         ("not_delivered", "Not Delivered")],

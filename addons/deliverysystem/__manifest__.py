@@ -14,7 +14,11 @@ Long description of module's purpose
         'web.assets_backend': [
             'deliverysystem/static/src/js/delivery_route_map.js',
             'deliverysystem/static/src/js/plan_route.js',
+            'deliverysystem/static/src/js/open_route_map_dialog.js',
+            'deliverysystem/static/src/js/open_route_map_modal.js',
             'deliverysystem/static/src/xml/delivery_route_map.xml',
+            'deliverysystem/static/src/xml/delivery_route_map_modal.xml',
+            'deliverysystem/static/src/xml/open_route_map_dialog.xml',
         ],
     },
     'data': [
@@ -26,7 +30,7 @@ Long description of module's purpose
         'views/templates.xml',
         'views/res_config_settings_views.xml',
         'views/deliverysystem_config_menu.xml',
-        'views/tracking_template.xml',
+
     ],
     "installable": True,
     "application": True,

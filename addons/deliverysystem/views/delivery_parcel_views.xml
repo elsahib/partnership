@@ -92,18 +92,11 @@
             <group>
               <field name="distance" />
               <field name="expected_duration" widget="float_time" />
-              <field name="estimated_arrival_time" />
             </group>
           </group>
           <notebook>
             <page string="Stops" name="stops">
-              <field name="stops">
-                <list editable="bottom">
-                  <field name="sequence" widget="handle" />
-                  <field name="address" />
-                  <field name="stop_type" />
-                  <field name="status" />
-                </list>
+              <field name="stops" widget="one2many">
               </field>
             </page>
           </notebook>
@@ -189,11 +182,8 @@
   <record id="delivery_route_sequence" model="ir.sequence">
     <field name="name">Delivery Route Sequence</field>
     <field name="code">delivery.route</field>
-    
     <field name="prefix">ROUTE/</field>
-   
     <field name="padding">4</field>
-  
   </record>
 
   <record id="delivery_parcel_action" model="ir.actions.act_window">
