@@ -16,6 +16,7 @@ class OpenRouteMapDialog extends Component {
             routeId: null,
             stops: [],
             apiKey: null,
+            polyline: null,
         });
 
         onMounted(async () => {
@@ -26,13 +27,14 @@ class OpenRouteMapDialog extends Component {
 
     async loadData() {
         if (!this.routeId) return;
-        const route = await this.orm.read("delivery.route", [this.routeId], ["stops"]);
+        const route = await this.orm.read("delivery.route", [this.routeId], ["stops", "polyline"]);
         const stopIds = route[0].stops;
         const stops = await this.orm.read("delivery.stop", stopIds, ["address", "sequence"]);
         const apiKey = await this.orm.call('google.maps.helper', 'get_api_key', [[]]);
         this.state.routeId = this.routeId;
         this.state.stops = stops;
         this.state.apiKey = apiKey;
+        this.state.polyline = route[0].polyline;
     }
 
     renderModal() {
@@ -40,6 +42,7 @@ class OpenRouteMapDialog extends Component {
             routeId: this.state.routeId,
             stops: this.state.stops,
             apiKey: this.state.apiKey,
+            polyline: this.state.polyline,
             action: this.props.action,
         });
     }

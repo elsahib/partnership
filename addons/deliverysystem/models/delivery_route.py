@@ -1,5 +1,8 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError, UserError
+import logging
+import re
+_logger = logging.getLogger(__name__)
 class DeliveryRoute(models.Model):
     _name = "delivery.route"
     _description = "Delivery Route"
@@ -11,7 +14,6 @@ class DeliveryRoute(models.Model):
     )
     expected_duration = fields.Float(string="Expected Duration (Hours)")
     event_id = fields.Many2one('block.schedule', string="Delivery Block")
-    google_maps_route_id = fields.Char(string="Google Maps Route ID") 
     distance = fields.Float(string="Distance (KM)") 
     polyline = fields.Text(string="Polyline")
     def generate_optimized_route(self):
@@ -24,13 +26,37 @@ class DeliveryRoute(models.Model):
         waypoints = [stop.address for stop in sorted_stops[1:-1]]
         maps_helper = self.env['google.maps.helper']
         route_data = maps_helper.optimize_route(origin, destination, waypoints)
+        _logger.info(f"Route Data: {route_data}")  # Log route data
         if 'routes' in route_data and route_data['routes']:
             route = route_data['routes'][0]
+            _logger.info(f"Writing route data to delivery.route")
+            
+            duration_str = route.get('duration', '0s')
+            match = re.match(r'(\d+)s', duration_str)
+            if match:
+                duration_seconds = int(match.group(1))
+                duration_seconds += len(self.stops) * 120  # Add 2 minutes per stop
+                duration_hours = duration_seconds / 3600  # Convert to hours
+            else:
+                duration_hours = 0.0  # Default value if parsing fails
+
             self.write({
                 'distance': route.get('distanceMeters', 0) / 1000,  # Convert to KM
-                'expected_duration': route.get('duration', '0s'),
+                'expected_duration': duration_hours,
                 'polyline': route.get('polyline', {}).get('encodedPolyline', '')
             })
+            _logger.info(f"Route data written successfully")
+
+            if 'legs' in route:
+                ordered_addresses = [leg['end_address'] for leg in route['legs']]
+
+                for i, address in enumerate(ordered_addresses):
+                    stop = self.stops.filtered(lambda s: s.address == address)
+                    if stop:
+                        stop.sequence = i + 1
+            else:
+                _logger.warning(f"'legs' key not found in route data. Route data: {route}")
+
         return True
     def track_delivery_partner(self):
         if self.delivery_partner_id and self.delivery_partner_id.current_location:

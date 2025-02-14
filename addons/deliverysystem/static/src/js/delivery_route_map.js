@@ -8,6 +8,7 @@ export class DeliveryRouteMap extends Component {
         routeId: { type: Number },
         stops: { type: Array },
         apiKey: { type: String },
+        polyline: { type: String },
     };
     
     setup() {
@@ -15,8 +16,8 @@ export class DeliveryRouteMap extends Component {
         this.routeId = this.props.routeId;
         this.stops = this.props.stops;
         this.apiKey = this.props.apiKey;
+        this.polyline = this.props.polyline;
         this.mapRef = useRef("route_map");
-        console.log('Map Props:', this.props);
 
         onMounted(() => {
             console.log('DeliveryRouteMap mounted');
@@ -38,7 +39,7 @@ export class DeliveryRouteMap extends Component {
             };
 
             const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${this.apiKey}&callback=initMap&loading=async&v=weekly&libraries=marker,places&map_ids=${this.map_ids}`;
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${this.apiKey}&callback=initMap&loading=async&v=weekly&libraries=marker,places,geometry&map_ids=${this.map_ids}`;
             script.async = true;
             script.defer = true;
             script.onerror = (e) => {
@@ -50,7 +51,6 @@ export class DeliveryRouteMap extends Component {
     }
 
     async initializeMap() {
-        console.log('Initializing map...');
         try {
             const googleMaps = await this.loadGoogleMaps();
             await this._initMap(googleMaps);
@@ -71,6 +71,26 @@ export class DeliveryRouteMap extends Component {
             center: { lat: 51.5074, lng: -0.1278 },
             mapId: this.map_ids,
         });
+        const bounds = new googleMaps.LatLngBounds();
+        
+        if (this.polyline && this.polyline.length > 0) {
+            try {
+                const decodedPath = googleMaps.geometry.encoding.decodePath(this.polyline);
+                const polyline = new googleMaps.Polyline({
+                    path: decodedPath,
+                    geodesic: true,
+                    strokeColor: '#2980b9',
+                    strokeOpacity: 1.0,
+                    strokeWeight: 4
+                });
+        
+                polyline.setMap(map);
+            } catch (error) {
+                console.error('Error decoding or displaying polyline:', error);
+            }
+        } else {
+            console.warn('No polyline data available or polyline is empty.');
+        }
 
         for (const stop of this.stops) {
             const geocoder = new googleMaps.Geocoder();
@@ -91,10 +111,13 @@ export class DeliveryRouteMap extends Component {
                     title: stop.address,
                     content: this.createMarkerContent(stop.sequence)
                 });
+
+                bounds.extend(results[0].geometry.location);
             } catch (error) {
                 console.error(`Error geocoding address ${stop.address}:`, error);
             }
         }
+        map.fitBounds(bounds);
     }
 
     createMarkerContent(sequence) {
