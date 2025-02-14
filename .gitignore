@@ -1,5 +1,4 @@
 .env
-config/
-config/odoo.conf
-config/*
+config\odoo.conf
+config\*
 *.pyc
