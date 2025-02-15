@@ -8,11 +8,12 @@ export class DeliveryRouteMap extends Component {
         routeId: { type: Number },
         stops: { type: Array },
         apiKey: { type: String },
+        mapId: { type: String },
         polyline: { type: String },
     };
 
     setup() {
-        this.map_ids = '25bca46518f5ae1c';
+        this.map_ids = this.props.mapId;
         this.routeId = this.props.routeId;
         this.stops = this.props.stops;
         this.apiKey = this.props.apiKey;
@@ -94,7 +95,6 @@ export class DeliveryRouteMap extends Component {
         for (const stop of this.stops) {
 
             const position = { lat: stop.latitude, lng: stop.longitude };
-            console.log(position);
             const marker = new googleMaps.marker.AdvancedMarkerElement({
                 map,
                 position: position,

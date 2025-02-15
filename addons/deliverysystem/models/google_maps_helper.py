@@ -10,8 +10,12 @@ class GoogleMapsHelper(models.AbstractModel):
     def get_api_key(self):
         return self._get_api_key()
         
+    def get_map_id(self):
+        return self.env['ir.config_parameter'].sudo().get_param('deliverysystem.google_maps_map_id')
+
     def _get_api_key(self):
         return self.env['ir.config_parameter'].sudo().get_param('deliverysystem.google_maps_api_key')
+
     def optimize_route(self, origin, destination, waypoints):
         api_key = self._get_api_key()
         if not api_key:

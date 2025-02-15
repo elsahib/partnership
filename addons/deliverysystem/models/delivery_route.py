@@ -70,7 +70,7 @@ class DeliveryRoute(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.client',
-            'tag': 'open_delivery_route_map_modal',
+            'tag': 'delivery_route_map_action',
             'target': 'new',
             'name': 'Route Map',
             'params': {

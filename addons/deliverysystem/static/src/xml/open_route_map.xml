@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="deliverysystem.DeliveryRouteMapAction">
+        <Dialog title="'Delivery Route Map'" size="'xl'">
+            <DeliveryRouteMap 
+                routeId="state.routeId"
+                stops="state.stops"
+                apiKey="state.apiKey"
+                polyline="state.polyline"
+                mapId="state.mapId"
+            />
+        </Dialog>
+    </t>
+</templates>

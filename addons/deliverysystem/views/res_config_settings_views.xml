@@ -24,6 +24,11 @@
                                     </ol>
                                 </div>
                                 <field name="google_maps_api_key" password="True"/>
+                                <br />
+                                <br />
+                                <label for="google_maps_map_id"/>
+                                <div class="text-muted"></div>
+                                <field name="google_maps_map_id" />
                             </div>
                         </div>
                     </div>
