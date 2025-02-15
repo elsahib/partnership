@@ -48,7 +48,7 @@ class DeliveryRoute(models.Model):
             _logger.info(f"Route data written successfully")
 
             if 'legs' in route:
-                ordered_addresses = [leg['end_address'] for leg in route['legs']]
+                ordered_addresses = [leg['endLocation'] for leg in route['legs']]
 
                 for i, address in enumerate(ordered_addresses):
                     stop = self.stops.filtered(lambda s: s.address == address)

@@ -10,7 +10,7 @@ export class DeliveryRouteMap extends Component {
         apiKey: { type: String },
         polyline: { type: String },
     };
-    
+
     setup() {
         this.map_ids = '25bca46518f5ae1c';
         this.routeId = this.props.routeId;
@@ -65,14 +65,14 @@ export class DeliveryRouteMap extends Component {
             return;
         }
         console.log('Map element found:', this.mapRef.el);
-        
+
         const map = new googleMaps.Map(this.mapRef.el, {
             zoom: 12,
             center: { lat: 51.5074, lng: -0.1278 },
             mapId: this.map_ids,
         });
         const bounds = new googleMaps.LatLngBounds();
-        
+
         if (this.polyline && this.polyline.length > 0) {
             try {
                 const decodedPath = googleMaps.geometry.encoding.decodePath(this.polyline);
@@ -83,7 +83,6 @@ export class DeliveryRouteMap extends Component {
                     strokeOpacity: 1.0,
                     strokeWeight: 4
                 });
-        
                 polyline.setMap(map);
             } catch (error) {
                 console.error('Error decoding or displaying polyline:', error);
@@ -93,29 +92,17 @@ export class DeliveryRouteMap extends Component {
         }
 
         for (const stop of this.stops) {
-            const geocoder = new googleMaps.Geocoder();
-            try {
-                const results = await new Promise((resolve, reject) => {
-                    geocoder.geocode({ 'address': stop.address }, (results, status) => {
-                        if (status === 'OK') {
-                            resolve(results);
-                        } else {
-                            reject(status);
-                        }
-                    });
-                });
-                
-                const marker = new googleMaps.marker.AdvancedMarkerElement({
-                    map,
-                    position: results[0].geometry.location,
-                    title: stop.address,
-                    content: this.createMarkerContent(stop.sequence)
-                });
 
-                bounds.extend(results[0].geometry.location);
-            } catch (error) {
-                console.error(`Error geocoding address ${stop.address}:`, error);
-            }
+            const position = { lat: stop.latitude, lng: stop.longitude };
+            console.log(position);
+            const marker = new googleMaps.marker.AdvancedMarkerElement({
+                map,
+                position: position,
+                title: stop.address,
+                content: this.createMarkerContent(stop.sequence)
+            });
+
+            bounds.extend(position);
         }
         map.fitBounds(bounds);
     }

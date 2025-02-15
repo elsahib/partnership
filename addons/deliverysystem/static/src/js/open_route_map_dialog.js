@@ -29,7 +29,7 @@ class OpenRouteMapDialog extends Component {
         if (!this.routeId) return;
         const route = await this.orm.read("delivery.route", [this.routeId], ["stops", "polyline"]);
         const stopIds = route[0].stops;
-        const stops = await this.orm.read("delivery.stop", stopIds, ["address", "sequence"]);
+        const stops = await this.orm.read("delivery.stop", stopIds, ["address", "sequence","latitude","longitude"]);
         const apiKey = await this.orm.call('google.maps.helper', 'get_api_key', [[]]);
         this.state.routeId = this.routeId;
         this.state.stops = stops;

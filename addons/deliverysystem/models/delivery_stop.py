@@ -25,6 +25,9 @@ class DeliveryStop(models.Model):
         "delivery.parcel", "stop_id", string="Associated Parcels"
     )
     route_id = fields.Many2one("delivery.route", string="Associated Route")
+    latitude = fields.Float(string="Latitude", digits=(10, 7), store=True, compute='_compute_geocode')
+    longitude = fields.Float(string="Longitude", digits=(10, 7), store=True, compute='_compute_geocode')
+
     def create_route_from_stops(self):
         active_model = self.env.context.get('active_model')
         if not active_model:
@@ -51,3 +54,22 @@ class DeliveryStop(models.Model):
             'view_type': 'form',
             'target': 'current',
         }
+
+    @api.depends('address')
+    def _compute_geocode(self):
+        """Compute latitude and longitude based on address using Google Maps API."""
+        for stop in self:
+            if stop.address:
+                maps_helper = self.env['google.maps.helper']
+                geocode_result = maps_helper.geocode(stop.address)
+                if geocode_result and len(geocode_result) > 0:
+                    location = geocode_result[0]['geometry']['location']
+                    stop.latitude = location['lat']
+                    stop.longitude = location['lng']
+                else:
+                    stop.latitude = 0.0
+                    stop.longitude = 0.0
+                    _logger.warning(f"Geocoding failed for address: {stop.address}")
+            else:
+                stop.latitude = 0.0
+                stop.longitude = 0.0

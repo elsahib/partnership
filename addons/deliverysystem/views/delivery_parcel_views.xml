@@ -139,6 +139,7 @@
             <field name="stop_type" />
             <field name="status" />
             <field name="route_id" />
+            <field name="associated_parcels" />
           </group>
         </sheet>
       </form>
@@ -172,6 +173,8 @@
         <field name="stop_type" />
         <field name="status" />
         <field name="associated_parcels" />
+        <field name="latitude" />
+        <field name="longitude" />
         <field name="route_id" invisible="1" />
         <field name="id" invisible="1" />
 
