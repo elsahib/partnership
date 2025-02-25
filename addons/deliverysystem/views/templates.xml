@@ -1,5 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <data>
+    <record id="delivery_dashboard_view" model="ir.ui.view">
+        <field name="name">delivery.dashboard.view</field>
+        <field name="model">delivery.dashboard</field>
+        <field name="arch" type="xml">
+            <kanban class="o_delivery_dashboard" create="false" sample="1">
+                <field name="total_parcels" />
+                <field name="parcels_delivered" />
+                <field name="active_routes" />
+                <field name="active_drivers" />
+                <templates>
+                    <t t-name="card">
+                        <div class="container-fluid o_delivery_dashboard">
+                            <!-- Summary Cards -->
+                            <div class="row mt-3">
+                                <div class="col-12 col-md-5 col-md-3 mb-3">
+                                    <div class="card h-100 bg-primary text-white">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Total Parcels</h5>
+                                            <p class="card-text h2">
+                                                <field name="total_parcels" />
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-5 col-md-3 mb-3">
+                                    <div class="card h-100 bg-success text-white">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Delivered Today</h5>
+                                            <p class="card-text h2">
+                                                <field name="parcels_delivered" />
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-5 col-md-3 mb-3">
+                                    <div class="card h-100 bg-info text-white">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Active Routes</h5>
+                                            <p class="card-text h2">
+                                                <field name="active_routes" />
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-5 col-md-3 mb-3">
+                                    <div class="card h-100 bg-warning text-white">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Active Drivers</h5>
+                                            <p class="card-text h2">
+                                                <field name="active_drivers" />
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-    </data>
+                            <!-- Charts Section -->
+                            <div class="row mt-4">
+                                <div class="col-12 col-lg-6 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Delivery Performance</h5>
+                                            <div class="delivery-chart" t-att-data-id="id" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-6 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Active Routes Map</h5>
+                                            <div class="route-map" t-att-data-id="id" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="action_delivery_dashboard" model="ir.actions.act_window">
+        <field name="name">Delivery Dashboard</field>
+        <field name="res_model">delivery.dashboard</field>
+        <field name="view_mode">kanban</field>
+        <field name="view_id" ref="delivery_dashboard_view" />
+        <field name="target">main</field>
+        <field name="domain">[]</field>
+        <field name="limit">1</field>
+    </record>
+
+    <!-- Add Dashboard menu item -->
+    <menuitem
+        id="menu_delivery_dashboard"
+        name="Dashboard"
+        action="action_delivery_dashboard"
+        parent="deliverysystem.delivery_root"
+        sequence="1" />
 </odoo>

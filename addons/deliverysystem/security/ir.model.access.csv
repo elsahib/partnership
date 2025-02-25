@@ -18,3 +18,6 @@ access_block_schedule_admin,block.schedule.admin,model_block_schedule,base.group
 access_block_schedule_driver,block.schedule.driver,model_block_schedule,deliverysystem.group_driver,1,1,0,0
 access_block_schedule_warehouse,block.schedule.warehouse,model_block_schedule,deliverysystem.group_warehouse,1,1,0,0
 access_block_schedule_customer,block.schedule.customer,model_block_schedule,base.group_public,1,0,0,0
+
+access_delivery_dashboard_user,delivery.dashboard.user,model_delivery_dashboard,base.group_user,1,0,0,0
+access_delivery_dashboard_admin,delivery.dashboard.admin,model_delivery_dashboard,base.group_system,1,1,1,1

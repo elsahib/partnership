@@ -26,7 +26,6 @@ class DeliveryRoute(models.Model):
         waypoints = [stop.address for stop in sorted_stops[1:-1]]
         maps_helper = self.env['google.maps.helper']
         route_data = maps_helper.optimize_route(origin, destination, waypoints)
-        _logger.info(f"Route Data: {route_data}")  # Log route data
         if 'routes' in route_data and route_data['routes']:
             route = route_data['routes'][0]
             _logger.info(f"Writing route data to delivery.route")
@@ -49,11 +48,14 @@ class DeliveryRoute(models.Model):
 
             if 'legs' in route:
                 ordered_addresses = [leg['endLocation'] for leg in route['legs']]
+                margin= 0.001
 
                 for i, address in enumerate(ordered_addresses):
-                    stop = self.stops.filtered(lambda s: s.address == address)
+                    _logger.info(address)
+                    stop = self.stops.filtered(lambda s: abs(s.latitude - address['latLng']['latitude']) < margin and abs(s.longitude - address['latLng']['longitude']) < margin)
                     if stop:
                         stop.sequence = i + 1
+                        _logger.info('YAAAAAAAAYYYYYYYYYYYYY found one')
             else:
                 _logger.warning(f"'legs' key not found in route data. Route data: {route}")
 

@@ -8,5 +8,7 @@ from . import delivery_route
 from . import hr_employee
 from . import google_maps_helper
 from . import res_config_settings
+from . import delivery_dashboard
+
 
 

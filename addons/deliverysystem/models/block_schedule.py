@@ -90,6 +90,7 @@ class BlockSchedule(models.Model):
             'driver_ids': [(4, current_user_partner.id)]
         })
         return True
+    
     def action_unregister(self):
         """Action for a driver to unregister from this block"""
         self.ensure_one()
